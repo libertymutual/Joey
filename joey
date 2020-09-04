@@ -1,0 +1,3 @@
+#!/bin/sh
+JOEYVERSION=0.1.0-SNAPSHOT
+java -Dkawa.command.name=$0 -jar ${JOEYDIR:-.}/build/libs/Joey-$JOEYVERSION.jar -e '(import (com lmig uscm joey random-data) (com lmig uscm joey joey) (com lmig uscm joey http) (com lmig uscm joey config) (srfi 69) (srfi 1))' --script $*

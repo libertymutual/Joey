@@ -1,0 +1,59 @@
+
+buildscript {
+    repositories {
+        mavenLocal()
+	gradlePluginPortal()
+    }
+    dependencies {
+	classpath "gradle.plugin.com.medranocalvo.gradle:gradle-kawa-plugin:0.9"
+	classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version "0.1.0-SNAPSHOT"
+def libFiles = fileTree(include: ['*.jar'], dir: 'libs')
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+task compileKawa(type: JavaExec) {
+    classpath = sourceSets.main.compileClasspath
+    main = "kawa.repl"
+    def kawaSrcDir = "src/main/scm"
+    def destDir = compileJava.destinationDir
+    def kawaFiles = fileTree(include: ['**/*.scm'], dir: kawaSrcDir)
+    def packageName = "com.lmig.joey."
+    inputs.files kawaFiles
+    outputs.dir(destDir)
+    args "-P"
+    args packageName
+    args "-d"
+    args destDir
+    args "-C"
+    args kawaFiles
+}
+
+classes.dependsOn(compileKawa)
+
+dependencies {
+    compile 'org.json:json:20170516'
+    compile 'org.apache.httpcomponents:httpclient:4.5.3'
+    compile libFiles
+}
+
+jar {
+  enabled = true
+    manifest {
+        attributes(
+                'Main-Class': 'kawa.repl'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

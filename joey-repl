@@ -1,0 +1,3 @@
+#!/bin/sh
+JOEYVERSION=0.1.0-SNAPSHOT
+java -jar ${JOEYDIR:-.}/build/libs/Joey-$JOEYVERSION.jar
